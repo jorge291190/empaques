@@ -1,0 +1,162 @@
+<div  style="display: block; margin:auto; width: 95%; height: 100%;">
+    <p>Formulario de captura  {{calibreSeleccionado}}</p>
+    <mat-grid-list cols="6" rowHeight="130px" >
+        <mat-grid-tile
+            
+            style="margin-left: 10px;  border-width: .5px; border-color: darkgreen;"
+            *ngFor="let tile of tiles"
+            [colspan]="tile.cols"
+            [rowspan]="tile.rows"
+            [style.background]="tile.color">
+        <!-- formulario de captura-->
+          <div *ngIf="tile.id === 1" style="display: block; margin: auto; width: 95%;">
+            
+              <mat-form-field class="example-full-width">
+                <input matInput
+                       placeholder="Lote"
+                       aria-label="Lote"
+                       [matAutocomplete]="auto"
+                       [formControl]="stateCtrl">
+                <mat-autocomplete #auto="matAutocomplete"
+                (optionSelected)="seleccionarLote();
+                "
+                >
+                  <mat-option *ngFor="let state of filteredStates | async"
+                  [value]="state.no">
+                    <img class="example-option-img" aria-hidden [src]="state.huerta" height="25">
+                    <span>{{state.no}}</span> °°°
+                    <small>Sagarpa: {{state.hue}}</small>
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+            
+              <br>
+              <mat-form-field style="display: block; margin: auto; width: 100%;"
+              >
+                <mat-label>No Cajas</mat-label>
+                <input matInput
+                [formControl]="inputCajas">
+              </mat-form-field>
+
+
+              <mat-form-field appearance="fill" > 
+                <mat-label>Selecciona un Calibre</mat-label>
+                <mat-select [(ngModel)]="calibreSeleccionado">
+                  <mat-option *ngFor="let calibre of calibres" [value]="calibre">{{calibre}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+             
+              <button mat-raised-button color="primary" (click)="agregar()">Agregar</button>
+              
+          </div>
+          <!-- tabla de contenidos-->
+          <div *ngIf="tile.id === 2" style="display:block; margin:auto; width: 95%; position: absolute; top: 10px;">
+            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" >
+
+                <!--- Note that these columns can be defined in any order.
+                      The actual rendered columns are set as a property on the row definition" -->
+              
+                <!-- Position Column -->
+                <ng-container matColumnDef="No. Lote">
+                  <th mat-header-cell *matHeaderCellDef> No.Lote </th>
+                  <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+                </ng-container>
+               <!-- idtrans -->
+               <ng-container matColumnDef="Id Etiqueta">
+                <th mat-header-cell *matHeaderCellDef> Id Etiqueta </th>
+                <td mat-cell *matCellDef="let element"> {{element.idtrans}} </td>
+              </ng-container>
+            
+                <!-- Name Column -->
+                <ng-container matColumnDef="HUE">
+                  <th mat-header-cell *matHeaderCellDef> HUE </th>
+                  <td mat-cell *matCellDef="let element"> {{element.hue}} </td>
+                </ng-container>
+              
+                <!-- Weight Column -->
+                <ng-container matColumnDef="Huerta">
+                  <th mat-header-cell *matHeaderCellDef> Huerta </th>
+                  <td mat-cell *matCellDef="let element"> {{element.huerta}} </td>
+                </ng-container>
+              
+                <!-- Symbol Column -->
+                <ng-container matColumnDef="Cajas">
+                  <th mat-header-cell *matHeaderCellDef> No Cajas </th>
+                  <td mat-cell *matCellDef="let element"> {{element.cajas}} </td>
+                </ng-container>
+
+              <!-- Symbol Column -->
+              <ng-container matColumnDef="Status">
+                <th mat-header-cell *matHeaderCellDef> Status </th>
+                <td mat-cell *matCellDef="let element"> {{element.status}} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="Peso">
+                <th mat-header-cell *matHeaderCellDef> Peso </th>
+                <td mat-cell *matCellDef="let element"> {{element.peso}} </td>
+              </ng-container>
+              <ng-container matColumnDef="Imprimir">
+                <th mat-header-cell *matHeaderCellDef> Imprimir </th>
+                <td mat-cell *matCellDef="let element">
+                  <button mat-mini-fab color='primary' aria-label="Example icon-button with a heart icon">
+                    <mat-icon>print</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="Eliminar">
+                <th mat-header-cell *matHeaderCellDef> Eliminar </th>
+                <td mat-cell *matCellDef="let element"> 
+                  <button mat-mini-fab color = 'warn' aria-label="Example icon-button with a heart icon">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="Seleccionar">
+                <th mat-header-cell *matHeaderCellDef> Seleccionar </th>
+                <td mat-cell *matCellDef="let element"> 
+                  <button mat-mini-fab color = 'basic' aria-label="Example icon-button with a heart icon"
+                    (click)="seleccionar(element.idtrans)"
+                  >
+                    <mat-icon>vertical_align_bottom</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+              
+          </div>
+          <!-- etiqueta qr-->
+          <div id="impresion">
+          <div *ngIf="tile.id === 3">
+            <mat-card style="width: 100%; display: block; margin: auto;">
+              <mat-card-content>
+               <p> <b>id:</b>{{elemento.id}} </p>
+               <p><b>Huerta:</b>{{elemento.huerta}}</p>
+               <p> <b>Sagarpa:</b>{{elemento.hue}} </p>
+               <ngx-barcode  style = "width: 20%;" [bc-value]="elemento.idtrans" [bc-display-value]="true"></ngx-barcode>
+              </mat-card-content></mat-card>
+         </div>
+
+          <div *ngIf="tile.id === 4">
+            
+                <qrcode  style = "display: block; margin:auto;"  [qrdata]="qrdata" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+
+          </div>
+        </div>
+
+        <div *ngIf="tile.id === 5">
+        
+          <button 
+          printTitle="MyTitle"
+          printSectionId="impresion" 
+        
+          ngxPrint mat-raised-button color="primary" >imprimir</button>
+        </div>
+        </mat-grid-tile>
+
+      </mat-grid-list>
+      
+     
+</div>
