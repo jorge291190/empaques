@@ -52,7 +52,7 @@ export class LotesComponent implements OnInit {
 
   
     this.router.navigateByUrl(ruta);
-
+      
   }
 
   internet(url: string) {
